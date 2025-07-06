@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triloka</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    
+    <div class="bg-animation"></div>
+    
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-magic"></i>
+                <span>Triloka</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="hero">
+            <h1>Professional Poster Designer</h1>
+            <p>Create stunning, high-quality posters with AI-powered design enhancement and custom logo integration</p>
+        </div>
+
+        <div class="glass-card">
+            <form id="posterForm">
+                <div class="form-group">
+                    <label for="promptInput" class="form-label">
+                        <i class="fas fa-lightbulb"></i>
+                        Describe Your Poster Concept
+                    </label>
+                    <textarea 
+                        id="promptInput" 
+                        class="form-input form-textarea" 
+                        placeholder="Enter your poster idea... (e.g., 'Tech conference poster with modern design' or 'Vintage coffee shop advertisement')"
+                        required
+                    ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="aspectRatio" class="form-label">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                        Aspect Ratio
+                    </label>
+                    <select id="aspectRatio" class="form-input form-select">
+                        <option value="1:1">Square (1:1)</option>
+                        <option value="16:9">Landscape (16:9)</option>
+                        <option value="9:16" selected>Portrait (9:16)</option>
+                        <option value="4:3">Standard (4:3)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="logoUpload" class="form-label">
+                        <i class="fas fa-image"></i>
+                        Upload Logo (Optional)
+                    </label>
+                    <div class="file-upload-wrapper">
+                        <input 
+                            type="file" 
+                            id="logoUpload" 
+                            class="file-upload-input" 
+                            accept="image/*"
+                        >
+                        <label for="logoUpload" class="file-upload-label">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <div>
+                                <div style="font-weight: 600;">Choose logo file</div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary);">PNG, JPG up to 16MB</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" id="generateBtn">
+                        <i class="fas fa-magic"></i>
+                        Generate Poster
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="loading" id="loadingSection">
+            <div class="spinner"></div>
+            <p id="loadingText">Enhancing your prompt with AI...</p>
+        </div>
+
+        <div class="enhanced-prompt" id="enhancedPromptSection">
+            <div class="glass-card">
+                <h3 style="margin-bottom: 1rem;">
+                    <i class="fas fa-sparkles"></i>
+                    AI-Enhanced Prompt
+                </h3>
+                <div class="prompt-display" id="promptDisplay"></div>
+            </div>
+        </div>
+
+        <div class="results" id="resultsSection">
+            <div class="glass-card">
+                <h3 style="margin-bottom: 2rem;">
+                    <i class="fas fa-images"></i>
+                    Generated Posters
+                </h3>
+                <div class="poster-grid" id="posterGrid"></div>
+<script src="/static/js/main.js"></script>
+<script>
+// Overlay drag logic
+// This script enables dragging the logo overlay on the poster images
+// It assumes the logo overlay is rendered as an absolutely positioned img over the poster
+
+function makeOverlayDraggable(overlayImg, posterCard) {
+    let isDragging = false;
+    let offsetX = 0, offsetY = 0;
+
+    overlayImg.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        const rect = overlayImg.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        overlayImg.style.cursor = 'grabbing';
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!isDragging) return;
+        const parentRect = posterCard.getBoundingClientRect();
+        let x = e.clientX - parentRect.left - offsetX;
+        let y = e.clientY - parentRect.top - offsetY;
+        // Clamp within poster
+        x = Math.max(0, Math.min(x, parentRect.width - overlayImg.width));
+        y = Math.max(0, Math.min(y, parentRect.height - overlayImg.height));
+        overlayImg.style.left = x + 'px';
+        overlayImg.style.top = y + 'px';
+    });
+
+    document.addEventListener('mouseup', function() {
+        if (isDragging) {
+            isDragging = false;
+            overlayImg.style.cursor = 'grab';
+        }
+    });
+}
+
+// Patch PosterGenerator.showPosters to add overlay drag if logo is present
+const origShowPosters = PosterGenerator.prototype.showPosters;
+PosterGenerator.prototype.showPosters = function(images) {
+    this.posterGrid.innerHTML = '';
+    images.forEach((src, idx) => {
+        const card = document.createElement('div');
+        card.classList.add('poster-card');
+        card.style.position = 'relative';
+        card.innerHTML = `
+            <img src="${src}" alt="Poster Image" class="poster-image" />
+            <div class="poster-controls">
+                <a href="${src}" class="btn btn-secondary" download target="_blank">
+                    <i class="fas fa-download"></i> Download
+                </a>
+            </div>
+        `;
+        // If a logo was uploaded, add overlay image for drag
+        if (this.logoFile) {
+            const overlay = document.createElement('img');
+            overlay.src = URL.createObjectURL(this.logoFile);
+            overlay.className = 'logo-overlay';
+            overlay.style.position = 'absolute';
+            overlay.style.left = '30px';
+            overlay.style.top = '30px';
+            overlay.style.width = '20%';
+            overlay.style.cursor = 'grab';
+            overlay.style.zIndex = 10;
+            card.appendChild(overlay);
+            makeOverlayDraggable(overlay, card);
+        }
+        this.posterGrid.appendChild(card);
+    });
+    this.resultsSection.style.display = 'block';
+};
+
+// Save logoFile reference on PosterGenerator
+const origHandleSubmit = PosterGenerator.prototype.handleSubmit;
+PosterGenerator.prototype.handleSubmit = async function(event) {
+    event.preventDefault();
+    const prompt = document.getElementById('promptInput').value.trim();
+    const aspectRatio = document.getElementById('aspectRatio').value;
+    this.logoFile = document.getElementById('logoUpload').files[0];
+    if (!prompt) return;
+    this.showLoading("Enhancing your prompt with AI...");
+    try {
+        const enhancedPrompt = await this.enhancePrompt(prompt, aspectRatio);
+        this.showEnhancedPrompt(enhancedPrompt);
+        this.showLoading("Generating poster...");
+        const posters = await this.generatePosters(enhancedPrompt, aspectRatio, this.logoFile);
+        this.showPosters(posters);
+    } catch (error) {
+        console.error("Error generating poster:", error);
+        alert("Something went wrong while generating your poster.");
+    } finally {
+        this.hideLoading();
+    }
+};
+</script>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>
