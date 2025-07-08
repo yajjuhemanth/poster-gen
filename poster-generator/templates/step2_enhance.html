@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Step 2: Enhanced Prompt</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Step 2: Enhanced Poster Prompt</h2>
+        <form action="/step3" method="post">
+            <label for="enhanced_prompt">AI-Enhanced Prompt:</label><br>
+            <textarea id="enhanced_prompt" name="enhanced_prompt" rows="6" cols="60" readonly>{{ enhanced_prompt }}</textarea><br><br>
+            <input type="hidden" name="prompt" value="{{ prompt }}">
+            <input type="hidden" name="aspect_ratio" value="{{ aspect_ratio }}">
+            <button type="submit" class="btn btn-primary">Next: Upload Logo</button>
+        </form>
+        <form action="/step1" method="get" style="margin-top: 10px;">
+            <button type="submit" class="btn btn-secondary">Back</button>
+        </form>
+    </div>
+</body>
+</html>

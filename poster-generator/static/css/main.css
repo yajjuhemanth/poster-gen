@@ -1,28 +1,30 @@
- * {
+* {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --dark-bg: #0a0e27;
-            --card-bg: rgba(255, 255, 255, 0.1);
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --text-primary: #ffffff;
-            --text-secondary: #b8c5d1;
-            --shadow-glow: 0 8px 32px rgba(31, 38, 135, 0.37);
-            --border-glass: rgba(255, 255, 255, 0.18);
+            --primary-gradient: linear-gradient(135deg, #181818 0%, #232323 100%);
+            --secondary-gradient: linear-gradient(135deg, #bfa76a 0%, #e6c87a 100%);
+            --accent-gradient: linear-gradient(135deg, #bfa76a 0%, #e6c87a 100%);
+            --dark-bg: #111111;
+            --card-bg: rgba(24, 24, 24, 0.92);
+            --glass-bg: rgba(40, 40, 40, 0.7);
+            --text-primary: #f8f6ef;
+            --text-secondary: #bfa76a;
+            --shadow-glow: 0 8px 32px rgba(191, 167, 106, 0.18);
+            --border-glass: rgba(191, 167, 106, 0.18);
         }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--dark-bg);
+            background: var(--primary-gradient), var(--dark-bg);
+            background-blend-mode: overlay;
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
+            min-height: 100vh;
         }
 
         /* Animated Background */
@@ -33,9 +35,9 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: linear-gradient(45deg, #0a0e27, #1a1f3a, #2a2f5a);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            background: linear-gradient(120deg, #181818 0%, #232323 100%);
+            background-size: 200% 200%;
+            animation: goldGradientMove 16s ease-in-out infinite;
         }
 
         .bg-animation::before {
@@ -46,21 +48,21 @@
             right: 0;
             bottom: 0;
             background-image: 
-                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
-            animation: floatBubbles 20s ease-in-out infinite;
+                radial-gradient(circle at 20% 50%, rgba(191, 167, 106, 0.08) 0%, transparent 60%),
+                radial-gradient(circle at 80% 20%, rgba(230, 200, 122, 0.10) 0%, transparent 60%),
+                radial-gradient(circle at 40% 80%, rgba(191, 167, 106, 0.07) 0%, transparent 60%);
+            animation: goldBubbles 24s ease-in-out infinite;
         }
 
-        @keyframes gradientShift {
+        @keyframes goldGradientMove {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
         }
 
-        @keyframes floatBubbles {
+        @keyframes goldBubbles {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-30px) rotate(120deg); }
-            66% { transform: translateY(20px) rotate(240deg); }
+            33% { transform: translateY(-20px) rotate(120deg); }
+            66% { transform: translateY(15px) rotate(240deg); }
         }
 
         /* Header */
@@ -139,12 +141,12 @@
         /* Glass Card */
         .glass-card {
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glass);
+            backdrop-filter: blur(18px);
+            border: 1.5px solid var(--border-glass);
             border-radius: 20px;
             padding: 2rem;
-            box-shadow: var(--shadow-glow);
-            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px 0 rgba(191, 167, 106, 0.10);
+            transition: all 0.3s cubic-bezier(.4,2,.3,1);
             position: relative;
             overflow: hidden;
         }
@@ -156,7 +158,7 @@
             left: 0;
             right: 0;
             height: 2px;
-            background: var(--primary-gradient);
+            background: var(--secondary-gradient);
             transform: scaleX(0);
             transition: transform 0.3s ease;
         }
@@ -167,7 +169,7 @@
 
         .glass-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(31, 38, 135, 0.5);
+            box-shadow: 0 20px 40px rgba(191, 167, 106, 0.18);
         }
 
         /* Form Styles */
@@ -234,25 +236,28 @@
         }
 
         .btn-primary {
-            background: var(--primary-gradient);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            background: var(--secondary-gradient);
+            color: #181818;
+            box-shadow: 0 4px 15px rgba(191, 167, 106, 0.18);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 8px 25px rgba(191, 167, 106, 0.28);
+            filter: brightness(1.08);
         }
 
         .btn-secondary {
-            background: var(--secondary-gradient);
-            color: white;
-            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1.5px solid var(--text-secondary);
+            box-shadow: none;
         }
 
         .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(240, 147, 251, 0.6);
+            background: var(--glass-bg);
+            color: #e6c87a;
+            border-color: #e6c87a;
         }
 
         .btn:disabled {
@@ -452,10 +457,10 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--primary-gradient);
+            background: var(--secondary-gradient);
             border-radius: 4px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--secondary-gradient);
+            background: var(--accent-gradient);
         }

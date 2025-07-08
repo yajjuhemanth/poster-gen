@@ -21,6 +21,9 @@
     </header>
 
     <div class="container">
+        <div style="text-align:right; margin-bottom: 12px;">
+            <a href="/history" class="btn btn-secondary"><i class="fas fa-history"></i> View History</a>
+        </div>
         <div class="hero">
             <h1>Professional Poster Designer</h1>
             <p>Create stunning, high-quality posters with AI-powered design enhancement and custom logo integration</p>
@@ -97,6 +100,25 @@
                     AI-Enhanced Prompt
                 </h3>
                 <div class="prompt-display" id="promptDisplay"></div>
+            </div>
+        </div>
+
+        <!-- Key Features Module (hidden by default) -->
+        <div class="key-features" id="keyFeaturesSection" style="display:none; margin-top: 24px;">
+            <div class="glass-card">
+                <h3 style="margin-bottom: 1rem;">
+                    <i class="fas fa-list"></i>
+                    Key Features of This Generation
+                </h3>
+                <ul id="featuresList" style="margin-bottom: 1.5rem;"></ul>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-secondary" id="regenerateBtn" type="button">
+                        <i class="fas fa-redo"></i> Regenerate Prompt
+                    </button>
+                    <button class="btn btn-primary" id="confirmGenerateBtn" type="button">
+                        <i class="fas fa-magic"></i> Generate Poster
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -209,5 +231,100 @@ PosterGenerator.prototype.handleSubmit = async function(event) {
     </div>
 
     <script src="/static/js/main.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+    // --- Key Features Module Logic ---
+    const enhancedPromptSection = document.getElementById('enhancedPromptSection');
+    const keyFeaturesSection = document.getElementById('keyFeaturesSection');
+    const featuresList = document.getElementById('featuresList');
+    const regenerateBtn = document.getElementById('regenerateBtn');
+    const confirmGenerateBtn = document.getElementById('confirmGenerateBtn');
+    let lastEnhancedPrompt = '';
+    let lastPrompt = '';
+    let lastAspectRatio = '';
+    // Patch PosterGenerator.showEnhancedPrompt to trigger feature extraction
+    const origShowEnhancedPrompt = PosterGenerator.prototype.showEnhancedPrompt;
+    PosterGenerator.prototype.showEnhancedPrompt = function(prompt) {
+        origShowEnhancedPrompt.call(this, prompt);
+        lastEnhancedPrompt = prompt;
+        lastPrompt = document.getElementById('promptInput').value.trim();
+        lastAspectRatio = document.getElementById('aspectRatio').value;
+        // Fetch features from backend
+        fetch('/extract-features', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ enhanced_prompt: prompt })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.features) {
+                featuresList.innerHTML = '';
+                for (const [key, value] of Object.entries(data.features)) {
+                    if (value) {
+                        featuresList.innerHTML += `<li><strong>${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</strong> ${value}</li>`;
+                    }
+                }
+                keyFeaturesSection.style.display = 'block';
+            } else {
+                featuresList.innerHTML = '<li>No features extracted.</li>';
+                keyFeaturesSection.style.display = 'block';
+            }
+        });
+    };
+    // Regenerate button: re-enhance prompt
+    regenerateBtn.onclick = function() {
+        keyFeaturesSection.style.display = 'none';
+        document.getElementById('loadingSection').style.display = 'block';
+        fetch('/enhance-prompt', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: lastPrompt })
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('loadingSection').style.display = 'none';
+            if (data.enhanced_prompt) {
+                PosterGenerator.prototype.showEnhancedPrompt.call(window.posterGen, data.enhanced_prompt);
+            }
+        });
+    };
+    // Confirm Generate button: proceed to poster generation
+    confirmGenerateBtn.onclick = function() {
+        keyFeaturesSection.style.display = 'none';
+        window.posterGen.showLoading('Generating poster...');
+        window.posterGen.generatePosters(lastEnhancedPrompt, lastAspectRatio, document.getElementById('logoUpload').files[0])
+            .then(posters => {
+                window.posterGen.showPosters(posters);
+            })
+            .catch(error => {
+                alert('Something went wrong while generating your poster.');
+            })
+            .finally(() => {
+                window.posterGen.hideLoading();
+            });
+    };
+    // Patch PosterGenerator to not auto-generate posters after enhancement
+    PosterGenerator.prototype.handleSubmit = async function(event) {
+        event.preventDefault();
+        const prompt = document.getElementById('promptInput').value.trim();
+        const aspectRatio = document.getElementById('aspectRatio').value;
+        this.logoFile = document.getElementById('logoUpload').files[0];
+        if (!prompt) return;
+        this.showLoading("Enhancing your prompt with AI...");
+        try {
+            const enhancedPrompt = await this.enhancePrompt(prompt, aspectRatio);
+            this.showEnhancedPrompt(enhancedPrompt);
+        } catch (error) {
+            console.error("Error enhancing prompt:", error);
+            alert("Something went wrong while enhancing your prompt.");
+        } finally {
+            this.hideLoading();
+        }
+    };
+    // Store PosterGenerator instance for use in patched methods
+    document.addEventListener('DOMContentLoaded', () => {
+        window.posterGen = new PosterGenerator();
+    });
+    </script>
 </body>
 </html>

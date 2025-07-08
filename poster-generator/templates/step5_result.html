@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Step 5: Download Poster</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Step 5: Download Your Poster</h2>
+        <div>
+            <p><strong>Prompt:</strong> {{ prompt }}</p>
+            <p><strong>Aspect Ratio:</strong> {{ aspect_ratio }}</p>
+            <p><strong>Logo:</strong> {{ logo_filename }}</p>
+        </div>
+        <div>
+            {% if posters %}
+                {% for poster in posters %}
+                    <div style="margin-bottom: 24px;">
+                        <img src="data:image/png;base64,{{ poster.image }}" alt="Poster" style="max-width: 100%; border: 1px solid #ccc;" />
+                        <br>
+                        <a href="data:image/png;base64,{{ poster.image }}" download="poster_{{ loop.index }}.png" class="btn btn-primary" style="margin-top: 8px;">Download Poster {{ loop.index }}</a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No posters generated.</p>
+            {% endif %}
+        </div>
+        <form action="/step4" method="post" style="margin-top: 10px;">
+            <input type="hidden" name="enhanced_prompt" value="{{ enhanced_prompt }}">
+            <input type="hidden" name="prompt" value="{{ prompt }}">
+            <input type="hidden" name="aspect_ratio" value="{{ aspect_ratio }}">
+            <input type="hidden" name="logo_filename" value="{{ logo_filename }}">
+            <button type="submit" class="btn btn-secondary">Back</button>
+        </form>
+    </div>
+</body>
+</html>

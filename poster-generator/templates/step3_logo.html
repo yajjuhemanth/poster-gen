@@ -1,0 +1,83 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Logo</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <style>
+        .logo-fade-in {
+            animation: fadeInUp 0.7s cubic-bezier(.4,2,.3,1);
+        }
+        .logo-upload-illustration {
+            text-align: center;
+            margin-bottom: 1.5em;
+        }
+        .logo-upload-illustration span {
+            font-size: 2.7em;
+            color: var(--text-secondary);
+            filter: drop-shadow(0 2px 8px rgba(191,167,106,0.12));
+        }
+        .logo-upload-actions {
+            display: flex;
+            gap: 1em;
+            margin-top: 1.5em;
+        }
+        .file-input {
+            padding: 10px 8px;
+            border-radius: 10px;
+            border: 1.5px solid var(--text-secondary);
+            width: 100%;
+            margin-top: 8px;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+        }
+        .file-input:focus {
+            outline: none;
+            border-color: #e6c87a;
+        }
+        @media (max-width: 600px) {
+            .glass-card { padding: 1em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="centered-container">
+        <div class="glass-card shadow-lg logo-fade-in" style="max-width: 420px; width:100%; margin: 48px auto; border-radius: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <span style="font-size: 1.18em; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.5px;">Logo Upload</span>
+                <a href="/history" class="btn btn-secondary" style="font-size:0.95em; padding: 0.5em 1.2em;"><i class="fas fa-history"></i> History</a>
+            </div>
+            <div class="logo-upload-illustration">
+                <span>🖼️</span>
+            </div>
+            <form action="/step4" method="post" enctype="multipart/form-data" style="margin-bottom: 0.5em;">
+                <input type="hidden" name="enhanced_prompt" value="{{ enhanced_prompt }}">
+                <input type="hidden" name="prompt" value="{{ prompt }}">
+                <input type="hidden" name="aspect_ratio" value="{{ aspect_ratio }}">
+                <label for="logo" style="font-weight:600; color:var(--text-secondary);">Logo Image (PNG/JPG):</label>
+                <input type="file" id="logo" name="logo" accept="image/*" class="file-input">
+                <label for="logo_position" style="font-weight:600; color:var(--text-secondary); margin-top:1em; display:block;">Logo Position:</label>
+                <div style="display:flex; flex-wrap:wrap; gap:0.7em 1em; margin-bottom:1em;">
+                    <label><input type="radio" name="logo_position" value="top-left" checked> Top Left</label>
+                    <label><input type="radio" name="logo_position" value="top-right"> Top Right</label>
+                    <label><input type="radio" name="logo_position" value="bottom-left"> Bottom Left</label>
+                    <label><input type="radio" name="logo_position" value="bottom-right"> Bottom Right</label>
+                    <label><input type="radio" name="logo_position" value="center"> Center</label>
+                </div>
+                <div class="logo-upload-actions">
+                    <button type="submit" class="btn btn-primary" style="width:100%;">Next</button>
+                    <button type="submit" formaction="/step4" formmethod="post" class="btn btn-secondary" style="width:100%; background:transparent;">Skip</button>
+                </div>
+            </form>
+            <form action="/step2" method="post" style="margin-top: 1em;">
+                <input type="hidden" name="prompt" value="{{ prompt }}">
+                <input type="hidden" name="aspect_ratio" value="{{ aspect_ratio }}">
+                <button type="submit" class="btn btn-secondary" style="width:100%;">Back</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
+            0% {background-position: 0% 50%;}

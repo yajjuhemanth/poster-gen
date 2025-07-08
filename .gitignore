@@ -2,3 +2,5 @@
 _pycache_/
 *.db
 .env
+logo.py
+logo.png
