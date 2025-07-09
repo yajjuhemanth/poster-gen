@@ -4,3 +4,4 @@ _pycache_/
 .env
 logo.py
 logo.png
+generation_history.json

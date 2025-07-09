@@ -1,0 +1,19 @@
+.settings-panel {
+  background-color: #fff;
+  padding: 20px;
+  border-left: 1px solid #ddd;
+  height: 100%;
+}
+
+.close-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  background-color: #2980b9;
+}

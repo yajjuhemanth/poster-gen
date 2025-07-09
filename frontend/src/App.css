@@ -1,0 +1,12 @@
+/* app.css */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+}
