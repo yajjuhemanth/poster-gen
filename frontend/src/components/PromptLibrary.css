@@ -1,0 +1,6 @@
+.prompt-library {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-left: 1px solid #ddd;
+  overflow-y: auto;
+}

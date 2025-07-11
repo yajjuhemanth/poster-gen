@@ -1,0 +1,8 @@
+/* botmessage.css */
+.bot-message {
+  background-color: #e0f7fa;
+  padding: 10px;
+  margin: 5px 0;
+  border-radius: 5px;
+  align-self: flex-start;
+}
